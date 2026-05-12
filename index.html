@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selo Biocombustível Social — MDA/SAF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rawline:wght@300;400;500;600&family=Raleway:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --azul-marinho: #004580;
+    --azul-vivo: #1351b4;
+    --azul-claro: #2670e8;
+    --verde-sbs: #168821;
+    --amarelo: #FFCD07;
+    --cinza-fundo: #f0f2f5;
+    --cinza-card: #ffffff;
+    --cinza-borda: #d9d9d9;
+    --texto-principal: #1c1c1e;
+    --texto-secundario: #555e6d;
+    --vermelho: #c0392b;
+  }
+  * { font-family: 'Rawline', sans-serif; box-sizing: border-box; }
+  h1,h2,h3,.titulo { font-family: 'Raleway', sans-serif; }
+  body { background: var(--cinza-fundo); color: var(--texto-principal); margin: 0; }
+
+  .govbr-bar { height: 5px; background: var(--azul-marinho); }
+
+  .tab-btn {
+    border-bottom: 3px solid transparent;
+    transition: all .2s;
+    color: var(--texto-secundario);
+    font-size: 0.83rem;
+    padding: 12px 16px;
+    white-space: nowrap;
+    background: none;
+    border-top: none; border-left: none; border-right: none;
+    cursor: pointer;
+  }
+  .tab-btn.active { border-bottom-color: var(--azul-vivo); color: var(--azul-vivo); font-weight: 700; }
+  .tab-btn:hover:not(.active) { border-bottom-color: var(--cinza-borda); color: var(--texto-principal); }
+
+  .chip {
+    border: 2px solid var(--cinza-borda);
+    color: var(--texto-secundario);
+    transition: all .2s;
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    background: none;
+  }
+  .chip.ativo-2023 { background: var(--azul-marinho); border-color: var(--azul-marinho); color: #fff; }
+  .chip.ativo-2024 { background: var(--azul-vivo); border-color: var(--azul-vivo); color: #fff; }
+  .chip.ativo-2025 { background: var(--verde-sbs); border-color: var(--verde-sbs); color: #fff; }
+
+  .kpi-card {
+    background: var(--cinza-card);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 16px 18px;
+    min-width: 0;
+  }
+  .kpi-valor {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--azul-marinho);
+    line-height: 1.2;
+  }
+  .kpi-label { font-size: 0.75rem; color: var(--texto-secundario); margin-top: 5px; line-height: 1.4; }
+  .kpi-ano { font-size: 0.68rem; color: #aaa; margin-top: 3px; }
+  .delta-pos { color: var(--verde-sbs); font-weight: 700; font-size: 0.8rem; }
+  .delta-neg { color: var(--vermelho); font-weight: 700; font-size: 0.8rem; }
+
+  .insight-box {
+    background: #EAF4EC;
+    border-left: 4px solid var(--verde-sbs);
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #1c4a22;
+    margin-top: 14px;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th {
+    background: var(--azul-marinho);
+    color: #fff;
+    padding: 8px 10px;
+    text-align: left;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+  }
+  td { padding: 7px 10px; border-bottom: 1px solid var(--cinza-borda); }
+  tr:hover td { background: #f5f8ff; }
+  tr.total-row td { font-weight: 700; background: #f0f5ff; }
+
+  .badge-novo24 { font-size: 0.62rem; background: var(--amarelo); color: var(--azul-marinho); padding: 1px 6px; border-radius: 10px; font-weight: 700; margin-left: 4px; white-space: nowrap; }
+  .badge-novo25 { font-size: 0.62rem; background: #e8f5e9; color: var(--verde-sbs); border: 1px solid #a5d6a7; padding: 1px 6px; border-radius: 10px; font-weight: 700; margin-left: 4px; white-space: nowrap; }
+
+  .pmen-abaixo { color: var(--vermelho); font-weight: 700; }
+  .section-title {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--azul-marinho);
+    border-left: 4px solid var(--azul-vivo);
+    padding-left: 10px;
+    margin-bottom: 14px;
+  }
+  .chart-container {
+    background: #fff;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .nota-metodologica {
+    background: #f8f9fa;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    margin-top: 10px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-kpi-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .grid-kpi-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .grid-kpi-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  @media (max-width: 900px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-kpi-5, .grid-kpi-4, .grid-kpi-6 { grid-template-columns: repeat(2, 1fr); }
+  }
+  .mb-4 { margin-bottom: 16px; }
+  .mb-6 { margin-bottom: 24px; }
+  .overflow-x { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div class="govbr-bar"></div>
+
+<header style="background:var(--azul-marinho);">
+  <div style="max-width:1280px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px;">
+    <div style="background:var(--amarelo);border-radius:4px;padding:4px 10px;">
+      <span style="font-family:'Raleway',sans-serif;font-weight:800;font-size:0.85rem;color:var(--azul-marinho);">MDA</span>
+    </div>
+    <div>
+      <div style="font-family:'Raleway',sans-serif;font-weight:800;font-size:1.05rem;color:#fff;">Selo Biocombustível Social</div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.7);">Ministério do Desenvolvimento Agrário e Agricultura Familiar — SAF</div>
+    </div>
+    <div style="margin-left:auto;">
+      <span style="font-size:0.72rem;color:rgba(255,255,255,0.55);">Painel de Monitoramento 2023–2025</span>
+    </div>
+  </div>
+</header>
+
+<!-- Chips de ano -->
+<div style="background:#fff;border-bottom:1px solid var(--cinza-borda);">
+  <div style="max-width:1280px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:0.78rem;color:var(--texto-secundario);font-weight:600;">Filtrar por ano:</span>
+    <button class="chip ativo-2023" onclick="toggleAno(2023)" id="chip-2023">2023</button>
+    <button class="chip ativo-2024" onclick="toggleAno(2024)" id="chip-2024">2024</button>
+    <button class="chip ativo-2025" onclick="toggleAno(2025)" id="chip-2025">2025</button>
+    <span id="modo-label" style="font-size:0.72rem;color:#aaa;margin-left:8px;"></span>
+  </div>
+</div>
+
+<!-- Abas -->
+<div style="background:#fff;border-bottom:2px solid var(--cinza-borda);position:sticky;top:0;z-index:100;">
+  <div style="max-width:1280px;margin:0 auto;padding:0 20px;display:flex;overflow-x:auto;">
+    <button class="tab-btn active" onclick="switchTab('visao-geral',this)">Visão Geral</button>
+    <button class="tab-btn" onclick="switchTab('regionalizacao',this)">Regionalização</button>
+    <button class="tab-btn" onclick="switchTab('diversificacao',this)">Diversificação</button>
+    <button class="tab-btn" onclick="switchTab('arranjos',this)">Arranjos e Beneficiários</button>
+    <button class="tab-btn" onclick="switchTab('ater',this)">ATER, Fomento e Doações</button>
+    <button class="tab-btn" onclick="switchTab('pmen',this)">PMEN</button>
+  </div>
+</div>
+
+<main style="max-width:1280px;margin:0 auto;padding:24px 20px;">
+
+<!-- ===== ABA 1 — VISÃO GERAL ===== -->
+<div id="tab-visao-geral" class="tab-content active">
+  <div id="kpis-vg" class="grid-kpi-5 mb-6"></div>
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">Evolução do Valor Total de Aquisições (R$ bi)</div>
+      <canvas id="chart-vg-evolucao" height="200"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">Composição do Valor: Soja vs. Não-Soja</div>
+      <canvas id="chart-vg-soja" height="200"></canvas>
+    </div>
+  </div>
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">Beneficiários por Região</div>
+      <canvas id="chart-vg-benef" height="200"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">PMEN vs. Meta de 22%</div>
+      <canvas id="chart-vg-pmen" height="200"></canvas>
+    </div>
+  </div>
+  <div id="insight-vg" class="insight-box"></div>
+</div>
+
+<!-- ===== ABA 2 — REGIONALIZAÇÃO ===== -->
+<div id="tab-regionalizacao" class="tab-content">
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">Evolução do Valor N/NE e Participação % no Total</div>
+      <canvas id="chart-reg-nne" height="240"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">Valor de Aquisições por Região (R$ bi)</div>
+      <canvas id="chart-reg-valor" height="240"></canvas>
+    </div>
+  </div>
+  <div class="chart-container mb-4">
+    <div class="section-title">Valor de Aquisições por Região — R$ e % do Total</div>
+    <div class="overflow-x" id="tabela-reg-valor"></div>
+  </div>
+  <div class="chart-container mb-4">
+    <div class="section-title">Beneficiários por Região — Nº e % do Total</div>
+    <div class="overflow-x" id="tabela-reg-benef"></div>
+  </div>
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">Beneficiários por Região</div>
+      <canvas id="chart-reg-benef" height="240"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">Cooperativas com CAF por Região</div>
+      <canvas id="chart-reg-caf" height="240"></canvas>
+    </div>
+  </div>
+  <div class="chart-container mb-4">
+    <div class="section-title">N/NE — Valor × Beneficiários (comparativo detalhado)</div>
+    <div class="overflow-x" id="tabela-nne"></div>
+  </div>
+  <div class="insight-box">💡 Em 2023, a participação do N/NE no valor total (8,2%) e no número de beneficiários (7,7%) eram praticamente equivalentes. Em 2025, o N/NE concentra 22,2% do valor e 12,7% dos beneficiários — gap de 9,5 pp. O valor médio por agricultor no N/NE passou a ser quase o dobro do registrado nas demais regiões, sugerindo que a expansão regional não alcançou proporcionalmente mais produtores.</div>
+</div>
+
+<!-- ===== ABA 3 — DIVERSIFICAÇÃO ===== -->
+<div id="tab-diversificacao" class="tab-content">
+  <div id="kpis-div" class="grid-kpi-4 mb-4"></div>
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">Composição Soja vs. Não-Soja</div>
+      <canvas id="chart-div-soja" height="240"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">Top 10 Produtos por Valor — 2025 (R$ mi)</div>
+      <canvas id="chart-div-top10" height="240"></canvas>
+    </div>
+  </div>
+  <div class="chart-container mb-4">
+    <div class="section-title">Tabela de Matérias-Primas por Ano</div>
+    <div class="overflow-x" id="tabela-mp"></div>
+  </div>
+  <div class="insight-box">💡 A diversificação não apenas ampliou a cesta — deslocou valor da soja para outros produtos. O valor absoluto das aquisições de soja caiu 13,8% entre 2023 e 2025, enquanto o não-soja cresceu 167%. Os produtos novos de 2025 — banana, cacau, café, mandioca, maracujá, sisal e uva — são frutas e culturas alimentares, alinhadas ao objetivo do Decreto nº 11.902/2024 de ampliar a participação da agricultura familiar na produção de alimentos.</div>
+</div>
+
+<!-- ===== ABA 4 — ARRANJOS ===== -->
+<div id="tab-arranjos" class="tab-content">
+  <div id="kpis-arr" class="grid-kpi-5 mb-4"></div>
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">Beneficiários por Região</div>
+      <canvas id="chart-arr-benef" height="260"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">Composição do Valor por Tipo de Arranjo</div>
+      <canvas id="chart-arr-rosca" height="260"></canvas>
+    </div>
+  </div>
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">Valor por Tipo de Arranjo</div>
+      <div class="overflow-x" id="tabela-arranjos"></div>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">Cooperativas com CAF por Região</div>
+      <div class="overflow-x" id="tabela-caf"></div>
+    </div>
+  </div>
+  <div class="insight-box">💡 O número de cooperativas com CAF cresceu 32% entre 2023 e 2025 (69 → 91 unidades), enquanto o número de beneficiários caiu 33% (62.442 → 41.887). A aparente contradição exposta pelos movimentos de expansão desse arranjo e a simultânea redução da base de produtores demanda maior investigação.</div>
+</div>
+
+<!-- ===== ABA 5 — ATER ===== -->
+<div id="tab-ater" class="tab-content">
+  <div id="kpis-ater" class="grid-kpi-4 mb-4"></div>
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">ATER, Fomento e Doações por Ano (R$ mi)</div>
+      <canvas id="chart-ater-barras" height="260"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">Custo ATER por Agricultor Familiar (R$)</div>
+      <canvas id="chart-ater-custo" height="260"></canvas>
+    </div>
+  </div>
+  <div class="chart-container mb-4">
+    <div class="section-title">Tabela Completa — ATER, Fomento e Doações</div>
+    <div class="overflow-x" id="tabela-ater"></div>
+  </div>
+  <div class="insight-box">💡 O custo de ATER por agricultor quase triplicou entre 2023 e 2025 (R$ 1.213 → R$ 3.183). A relação entre valor investido em ATER e valor de aquisições caiu de R$ 88,4 para R$ 51,1 por real investido — queda de 42%.</div>
+</div>
+
+<!-- ===== ABA 6 — PMEN ===== -->
+<div id="tab-pmen" class="tab-content">
+  <div id="kpis-pmen" class="grid-kpi-4 mb-4"></div>
+  <div class="grid-2 mb-4">
+    <div class="chart-container">
+      <div class="section-title">Evolução do PMEN vs. Meta (22%)</div>
+      <canvas id="chart-pmen-linha" height="260"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="section-title">Numerador (AF) × Denominador (Mercado) — R$ bi</div>
+      <canvas id="chart-pmen-barras" height="260"></canvas>
+    </div>
+  </div>
+  <div class="chart-container mb-4">
+    <div class="section-title">Tabela do PMEN</div>
+    <div class="overflow-x" id="tabela-pmen"></div>
+    <div class="nota-metodologica">
+      <strong>Nota metodológica:</strong> PMEN = (Aquisições AF + ATER + Fomento + Doações) ÷ Valor total bruto de biodiesel comercializado pelas UPBs com Selo. Numerador: SABIDO/MDA e informações formais das UPBs. Denominador 2023 e 2024: Volume ANP × Preço médio ponderado regional e mensal (série semanal ANP, "Preços Médios Ponderados Semanais a partir de 2013"); resultado aproximado, não exato, conforme metodologia da NT nº 2/2025/DMAITE-MDA. Denominador 2025: Valor bruto total informado diretamente pelas UPBs ao SABIDO (R$ 62,37 bi). <em>* O denominador de 2025 provém de declaração direta das empresas ao SABIDO, fonte não disponível no momento da elaboração da NT nº 2/2025. Por ser mais preciso que a estimativa via ANP, adotou-se metodologia distinta para esse ano.</em> Meta: 22% (Portaria MDA nº 28/2024, art. 31, §4º). Fontes: SABIDO/MDA, ANP, NT nº 2/2025/DMAITE-MDA, UPBs.
+    </div>
+  </div>
+  <div class="insight-box">💡 O valor pago à agricultura familiar cresceu apenas 1,8% nominais entre 2023 e 2025. No mesmo período, o PMEN caiu de 21,23% para 11,15% — uma deterioração de 10,1 pp em três anos. O principal vetor dessa queda não foi a redução do numerador, mas o crescimento acelerado do mercado de biodiesel, impulsionado pelo aumento da mistura obrigatória (12%→14%→15%) e pela alta de preços ao produtor. Para atingir o PMEN de 22% em 2025, o valor pago à AF deveria ter sido de R$ 13,72 bi — R$ 6,77 bi acima do valor efetivo.</div>
+</div>
+
+</main>
+
+<footer style="background:var(--azul-marinho);padding:10px 0;margin-top:32px;">
+  <div style="max-width:1280px;margin:0 auto;padding:0 20px;text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.5);">
+    Fonte: Sistema SABIDO — MDA / ANP / IBGE — Uso interno MDA/SAF
+  </div>
+</footer>
+
+<script>
+// ===================== DADOS =====================
+const DATA = {
+  2023: {
+    valor_total: 6691693593.21,
+    valor_real_base2023: 6691693593.21,
+    valor_norte: 81265578.06, valor_nordeste: 469085846.98,
+    valor_sudeste: 78878676.56, valor_co: 704148208.70, valor_sul: 5358315282.91,
+    benef_norte: 290, benef_nordeste: 4542, benef_sudeste: 344,
+    benef_co: 2270, benef_sul: 54996, benef_total: 62442, benef_nne: 4832,
+    caf_norte: 1, caf_nordeste: 16, caf_sudeste: 0, caf_co: 8, caf_sul: 44, caf_total: 69,
+    scaf_total: 11, agentes_total: 29,
+    valor_coop_caf: 4241246947.10, valor_coop_scaf: 902938558.43,
+    valor_agentes: 278012042.00, valor_individuais: 1269496045.68,
+    tipos_mp: 12, valor_soja: 6111342479.31, valor_nao_soja: 580351113.90,
+    mp: {'Soja':6111342479.31,'Coco':333127650,'Açaí Fruto':17412724,'Bovinos':48717633.49,'Milho':114280929.73,'Mamona':26201029.07,'Insumo Caroço de Açaí':21750000,'Coco Piaçava':4930000,'Canola':4979138,'Óleo de Frango':8808776,'Girassol':54750.01,'Dendê/Óleo de Dendê':88483.60},
+    valor_ater: 75722178.53, valor_doacao: 7610.83, valor_fomento: 65579.23,
+    total_ater: 75795368.59,
+    valor_medio_af: 107161.40,
+    pmen_numerador: 6767488382.00,
+    pmen_denominador: 35157024548.20,
+    pmen: 19.25,
+    fator_ipca: 1.0000,
+  },
+  2024: {
+    valor_total: 6512818485.16,
+    valor_real_base2023: 6210000000,
+    valor_norte: 328292368.50, valor_nordeste: 610999417.02,
+    valor_sudeste: 81236295.73, valor_co: 579434330.33, valor_sul: 4912856073.58,
+    benef_norte: 1306, benef_nordeste: 4386, benef_sudeste: 333,
+    benef_co: 1988, benef_sul: 47124, benef_total: 55137, benef_nne: 5692,
+    caf_norte: 5, caf_nordeste: 22, caf_sudeste: 1, caf_co: 9, caf_sul: 44, caf_total: 81,
+    scaf_total: 12, agentes_total: 24,
+    valor_coop_caf: 4718837474.16, valor_coop_scaf: 389316823.49,
+    valor_agentes: 189839843.00, valor_individuais: 1214824344.51,
+    tipos_mp: 18, valor_soja: 5536987993.78, valor_nao_soja: 975830491.38,
+    mp: {'Soja':5536987993.78,'Coco':423408882,'Açaí Fruto':173196759.35,'Bovinos':90580676.75,'Milho':87907551.01,'Mamona':79004322.46,'Arroz em Casca':24700000,'Castanha do Brasil':11574693.60,'Dendê/Óleo de Dendê':35920768.72,'Insumo Caroço de Açaí':22112500,'Coco Piaçava':8642000,'Canola':7844707.84,'Óleo de Frango':7382800,'Algodão':2022048,'Baru':520000,'Ovinos':464493,'Girassol':406827.35,'Caprinos':141461.30},
+    valor_ater: 76255168.93, valor_doacao: 54923.33, valor_fomento: 2345833.52,
+    total_ater: 78655925.78,
+    valor_medio_af: 118120.65,
+    pmen_numerador: 6591474410.94,
+    pmen_denominador: 50356500056.00,
+    pmen: 13.09,
+    fator_ipca: 1.0483,
+  },
+  2025: {
+    valor_total: 6814843864.91,
+    valor_real_base2023: 6240000000,
+    valor_norte: 653576469.39, valor_nordeste: 858159474.71,
+    valor_sudeste: 55307299.18, valor_co: 585638086.90, valor_sul: 4662162534.73,
+    benef_norte: 1981, benef_nordeste: 3354, benef_sudeste: 191,
+    benef_co: 1768, benef_sul: 34593, benef_total: 41887, benef_nne: 5335,
+    caf_norte: 9, caf_nordeste: 29, caf_sudeste: 1, caf_co: 9, caf_sul: 42, caf_total: 91,
+    scaf_total: 10, agentes_total: 22,
+    valor_coop_caf: 5106246947.10, valor_coop_scaf: 356941429.92,
+    valor_agentes: 227594642.00, valor_individuais: 1124060845.89,
+    tipos_mp: 24, valor_soja: 5265643751.49, valor_nao_soja: 1549200113.42,
+    mp: {'Soja':5265643751.49,'Coco':470006859.50,'Açaí Fruto':338532436.97,'Bovinos':145724279.78,'Cacau':108446843.40,'Milho':154541372.27,'Mamona':94891915.42,'Café':74571.12,'Arroz em Casca':60737500,'Banana':37176045.01,'Sisal':8936000,'Mandioca':7360000,'Canola':17652311.63,'Caprinos':557595.62,'Algodão':2700000,'Dendê/Óleo de Dendê':52473214.58,'Castanha do Brasil':21090000,'Insumo Caroço de Açaí':21000000,'Ovinos':4358610.13,'Coco Piaçava':1269460.54,'Uva':897118,'Maracujá':148665.45,'Baru':625314},
+    valor_ater: 133315634.08, valor_doacao: 1287288.99, valor_fomento: 3593077.04,
+    total_ater: 138196000.11,
+    valor_medio_af: 162695.91,
+    pmen_numerador: 6953040865.02,
+    pmen_denominador: 62374611633.31,
+    pmen: 11.15,
+    fator_ipca: 1.0930,
+  }
+};
+
+const REGIOES = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
+const CHAVE_VALOR = {'Norte':'valor_norte','Nordeste':'valor_nordeste','Centro-Oeste':'valor_co','Sudeste':'valor_sudeste','Sul':'valor_sul'};
+const CHAVE_BENEF = {'Norte':'benef_norte','Nordeste':'benef_nordeste','Centro-Oeste':'benef_co','Sudeste':'benef_sudeste','Sul':'benef_sul'};
+const CHAVE_CAF   = {'Norte':'caf_norte','Nordeste':'caf_nordeste','Centro-Oeste':'caf_co','Sudeste':'caf_sudeste','Sul':'caf_sul'};
+
+const CORES = { 2023: '#004580', 2024: '#1351b4', 2025: '#168821' };
+const CORES_ARR = ['#004580','#1351b4','#168821','#e6a817'];
+
+const MP_NOVOS = {
+  2024: ['Arroz em Casca','Castanha do Brasil','Algodão','Baru','Ovinos','Caprinos'],
+  2025: ['Banana','Cacau','Café','Mandioca','Maracujá','Sisal','Uva']
+};
+
+let anosAtivos = new Set([2023, 2024, 2025]);
+let charts = {};
+
+// ===================== UTILS =====================
+function fmtMoney(v) {
+  if (v == null) return '—';
+  if (Math.abs(v) >= 1e9) return 'R$ ' + (v/1e9).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' bi';
+  if (Math.abs(v) >= 1e6) return 'R$ ' + (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + ' mi';
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+function fmtPct(v,dec=1) { return v.toFixed(dec).replace('.',',') + '%'; }
+function fmtInt(v) { return Math.round(v).toLocaleString('pt-BR'); }
+
+function calcDelta(v0, vF) {
+  if (!v0 || !vF) return '';
+  const pct = (vF - v0) / Math.abs(v0) * 100;
+  const sinal = pct >= 0 ? '↑' : '↓';
+  const cls = pct >= 0 ? 'delta-pos' : 'delta-neg';
+  return `<span class="${cls}">${sinal} ${Math.abs(pct).toFixed(1).replace('.',',')}%</span>`;
+}
+
+function anosOrdenados() { return [...anosAtivos].sort((a,b)=>a-b); }
+function anoMin() { return Math.min(...anosAtivos); }
+function anoMax() { return Math.max(...anosAtivos); }
+
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function yAxisBi(v) { return 'R$ ' + v.toFixed(1) + ' bi'; }
+
+// ===================== TABS & CHIPS =====================
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  renderAll();
+}
+
+function toggleAno(ano) {
+  if (anosAtivos.has(ano) && anosAtivos.size === 1) return;
+  if (anosAtivos.has(ano)) anosAtivos.delete(ano); else anosAtivos.add(ano);
+  const chip = document.getElementById('chip-' + ano);
+  chip.className = anosAtivos.has(ano) ? `chip ativo-${ano}` : 'chip';
+  const label = document.getElementById('modo-label');
+  const anos = anosOrdenados();
+  label.textContent = anos.length === 1 ? `Visão anual: ${anos[0]}` : `Comparando: ${anos.join(' × ')}`;
+  renderAll();
+}
+
+// ===================== RENDER ALL =====================
+function renderAll() {
+  renderVisaoGeral();
+  renderRegionalizacao();
+  renderDiversificacao();
+  renderArranjos();
+  renderAter();
+  renderPMEN();
+}
+
+// ===================== KPI CARD =====================
+function kpiCard(valor, label, delta='', ano='') {
+  return `<div class="kpi-card">
+    <div class="kpi-valor">${valor}</div>
+    <div class="kpi-label">${label}${delta ? '<br>' + delta : ''}</div>
+    ${ano ? `<div class="kpi-ano">${ano}</div>` : ''}
+  </div>`;
+}
+
+// ===================== ABA 1 — VISÃO GERAL =====================
+function renderVisaoGeral() {
+  const anos = anosOrdenados();
+  const aF = anoMax(), a0 = anoMin();
+  const multi = anos.length > 1;
+  const labelDelta = multi ? `${a0}→${aF}` : '';
+
+  // KPIs — 5 cards
+  const kpis = [
+    { v: fmtMoney(DATA[aF].valor_total), l: 'Valor total de aquisições', d: multi ? calcDelta(DATA[a0].valor_total, DATA[aF].valor_total) : '' },
+    { v: fmtInt(DATA[aF].benef_total), l: 'Agricultores beneficiados', d: multi ? calcDelta(DATA[a0].benef_total, DATA[aF].benef_total) : '' },
+    { v: fmtMoney(DATA[aF].valor_medio_af), l: 'Valor médio por agricultor', d: multi ? calcDelta(DATA[a0].valor_medio_af, DATA[aF].valor_medio_af) : '' },
+    { v: DATA[aF].tipos_mp, l: 'Tipos de matéria-prima', d: multi ? calcDelta(DATA[a0].tipos_mp, DATA[aF].tipos_mp) : '' },
+    { v: DATA[aF].caf_total, l: 'Cooperativas com CAF', d: multi ? calcDelta(DATA[a0].caf_total, DATA[aF].caf_total) : '' },
+  ];
+  document.getElementById('kpis-vg').innerHTML = kpis.map(k =>
+    kpiCard(k.v, k.l, k.d, multi ? `Ref. ${aF} ${labelDelta ? '| var. '+labelDelta : ''}` : `Ano ${aF}`)
+  ).join('');
+
+  // Gráfico evolução — eixo Y com margem ampla para suavizar curva
+  destroyChart('vg-evolucao');
+  const ctx1 = document.getElementById('chart-vg-evolucao').getContext('2d');
+  const vals = anos.map(a => DATA[a].valor_total / 1e9);
+  const vMin = Math.min(...[DATA[2023].valor_total, DATA[2024].valor_total, DATA[2025].valor_total].map(v=>v/1e9));
+  const vMax = Math.max(...[DATA[2023].valor_total, DATA[2024].valor_total, DATA[2025].valor_total].map(v=>v/1e9));
+  charts['vg-evolucao'] = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: anos,
+      datasets: [{
+        label: 'Valor total (R$ bi)',
+        data: vals,
+        borderColor: '#1351b4',
+        backgroundColor: 'rgba(19,81,180,0.08)',
+        pointBackgroundColor: anos.map(a => CORES[a]),
+        pointRadius: 7, tension: 0.35, fill: true, borderWidth: 2.5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          min: Math.max(0, vMin * 0.93),
+          max: vMax * 1.07,
+          ticks: { callback: v => 'R$ ' + v.toFixed(2) + ' bi' }
+        }
+      }
+    }
+  });
+
+  // Gráfico soja vs não-soja
+  destroyChart('vg-soja');
+  const ctx2 = document.getElementById('chart-vg-soja').getContext('2d');
+  if (anos.length === 1) {
+    const a = anos[0];
+    charts['vg-soja'] = new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Soja', 'Não-Soja'],
+        datasets: [{ data: [DATA[a].valor_soja/1e9, DATA[a].valor_nao_soja/1e9], backgroundColor: ['#004580','#168821'], hoverOffset: 8 }]
+      },
+      options: { cutout: '58%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => fmtMoney(c.parsed * 1e9) } } } }
+    });
+  } else {
+    charts['vg-soja'] = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: anos,
+        datasets: [
+          { label: 'Soja', data: anos.map(a => DATA[a].valor_soja/1e9), backgroundColor: '#004580', borderRadius: 4 },
+          { label: 'Não-Soja', data: anos.map(a => DATA[a].valor_nao_soja/1e9), backgroundColor: '#168821', borderRadius: 4 }
+        ]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: yAxisBi } } } }
+    });
+  }
+
+  // Gráfico beneficiários por região
+  destroyChart('vg-benef');
+  const ctx3 = document.getElementById('chart-vg-benef').getContext('2d');
+  charts['vg-benef'] = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: REGIOES,
+      datasets: anos.map(a => ({
+        label: String(a),
+        data: REGIOES.map(r => DATA[a][CHAVE_BENEF[r]]),
+        backgroundColor: CORES[a], borderRadius: 3
+      }))
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: v => v.toLocaleString('pt-BR') } } } }
+  });
+
+  // Gráfico PMEN mini
+  destroyChart('vg-pmen');
+  const ctx4 = document.getElementById('chart-vg-pmen').getContext('2d');
+  charts['vg-pmen'] = new Chart(ctx4, {
+    type: 'line',
+    data: {
+      labels: anos,
+      datasets: [
+        {
+          label: 'PMEN (%)', data: anos.map(a => DATA[a].pmen),
+          borderColor: '#c0392b', backgroundColor: 'rgba(192,57,43,0.08)',
+          pointRadius: 6, tension: 0.3, fill: true, borderWidth: 2,
+          pointBackgroundColor: '#c0392b'
+        },
+        {
+          label: 'Meta (22%)', data: anos.map(() => 22),
+          borderColor: '#1351b4', borderDash: [6,4], pointRadius: 0, borderWidth: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { min: 0, max: 26, ticks: { callback: v => v + '%' } } }
+    }
+  });
+
+  // Insight dinâmico
+  const crescAcq = ((DATA[aF].valor_total - DATA[a0].valor_total) / DATA[a0].valor_total * 100).toFixed(1);
+  const pmenA0 = DATA[a0].pmen.toFixed(2).replace('.',',');
+  const pmenAF = DATA[aF].pmen.toFixed(2).replace('.',',');
+  document.getElementById('insight-vg').innerHTML = multi
+    ? `💡 Entre ${a0} e ${aF}, o valor nominal pago à agricultura familiar variou ${crescAcq}%, enquanto o PMEN caiu de ${pmenA0}% para ${pmenAF}%. A deterioração do indicador não decorreu de redução do numerador, mas do crescimento acelerado do mercado de biodiesel — impulsionado pelo aumento da mistura obrigatória e pela alta de preços ao produtor.`
+    : `💡 Em ${aF}, o valor total de aquisições foi de ${fmtMoney(DATA[aF].valor_total)}, com ${fmtInt(DATA[aF].benef_total)} agricultores beneficiados e PMEN de ${pmenAF}% (meta: 22%).`;
+}
+
+// ===================== ABA 2 — REGIONALIZAÇÃO =====================
+function renderRegionalizacao() {
+  const anos = anosOrdenados();
+
+  // Gráfico NNE evolução (sempre exibe todos os 3 anos para mostrar trajetória)
+  const anosRef = [2023,2024,2025];
+  destroyChart('reg-nne');
+  const ctx1 = document.getElementById('chart-reg-nne').getContext('2d');
+  charts['reg-nne'] = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: anosRef,
+      datasets: [
+        {
+          label: 'Valor N/NE (R$ bi)', yAxisID: 'y',
+          data: anosRef.map(a => (DATA[a].valor_norte + DATA[a].valor_nordeste) / 1e9),
+          borderColor: '#004580', backgroundColor: 'rgba(0,69,128,0.08)',
+          tension: 0.3, fill: true, pointRadius: 6
+        },
+        {
+          label: '% do Total', yAxisID: 'y1',
+          data: anosRef.map(a => (DATA[a].valor_norte + DATA[a].valor_nordeste) / DATA[a].valor_total * 100),
+          borderColor: '#168821', borderDash: [5,5], tension: 0.3, pointRadius: 6
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { type: 'linear', position: 'left', ticks: { callback: yAxisBi } },
+        y1: { type: 'linear', position: 'right', ticks: { callback: v => v.toFixed(1)+'%' }, grid: { drawOnChartArea: false } }
+      }
+    }
+  });
+
+  // Gráfico barras valor regional
+  destroyChart('reg-valor');
+  const ctx2 = document.getElementById('chart-reg-valor').getContext('2d');
+  charts['reg-valor'] = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: REGIOES,
+      datasets: anos.map(a => ({
+        label: String(a),
+        data: REGIOES.map(r => DATA[a][CHAVE_VALOR[r]] / 1e9),
+        backgroundColor: CORES[a], borderRadius: 3
+      }))
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: yAxisBi } } } }
+  });
+
+  // Tabela valor por região
+  let tvHtml = `<table><tr><th>Região</th>${anos.map(a=>`<th>${a} — Valor (R$)</th><th>${a} — % do Total</th>`).join('')}</tr>`;
+  REGIOES.forEach(r => {
+    tvHtml += `<tr><td><strong>${r}</strong></td>${anos.map(a => {
+      const v = DATA[a][CHAVE_VALOR[r]];
+      const pct = (v / DATA[a].valor_total * 100).toFixed(1);
+      return `<td>${fmtMoney(v)}</td><td>${pct}%</td>`;
+    }).join('')}</tr>`;
+  });
+  tvHtml += `<tr class="total-row"><td>Total</td>${anos.map(a=>`<td>${fmtMoney(DATA[a].valor_total)}</td><td>100%</td>`).join('')}</tr></table>`;
+  document.getElementById('tabela-reg-valor').innerHTML = tvHtml;
+
+  // Tabela beneficiários por região
+  let tbHtml = `<table><tr><th>Região</th>${anos.map(a=>`<th>${a} — Beneficiários</th><th>${a} — % do Total</th>`).join('')}</tr>`;
+  REGIOES.forEach(r => {
+    tbHtml += `<tr><td><strong>${r}</strong></td>${anos.map(a => {
+      const b = DATA[a][CHAVE_BENEF[r]];
+      const pct = (b / DATA[a].benef_total * 100).toFixed(1);
+      return `<td>${fmtInt(b)}</td><td>${pct}%</td>`;
+    }).join('')}</tr>`;
+  });
+  tbHtml += `<tr class="total-row"><td>Total</td>${anos.map(a=>`<td>${fmtInt(DATA[a].benef_total)}</td><td>100%</td>`).join('')}</tr></table>`;
+  document.getElementById('tabela-reg-benef').innerHTML = tbHtml;
+
+  // Gráfico beneficiários
+  destroyChart('reg-benef');
+  const ctx3 = document.getElementById('chart-reg-benef').getContext('2d');
+  charts['reg-benef'] = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: REGIOES,
+      datasets: anos.map(a => ({
+        label: String(a), data: REGIOES.map(r => DATA[a][CHAVE_BENEF[r]]),
+        backgroundColor: CORES[a], borderRadius: 3
+      }))
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: v => v.toLocaleString('pt-BR') } } } }
+  });
+
+  // Gráfico CAF por região
+  destroyChart('reg-caf');
+  const ctx4 = document.getElementById('chart-reg-caf').getContext('2d');
+  charts['reg-caf'] = new Chart(ctx4, {
+    type: 'bar',
+    data: {
+      labels: REGIOES,
+      datasets: anos.map(a => ({
+        label: String(a), data: REGIOES.map(r => DATA[a][CHAVE_CAF[r]]),
+        backgroundColor: CORES[a], borderRadius: 3
+      }))
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+  });
+
+  // Tabela NNE
+  const nneRows = [
+    ['Valor N/NE (R$)', a => fmtMoney(DATA[a].valor_norte + DATA[a].valor_nordeste)],
+    ['% do Valor Total', a => fmtPct((DATA[a].valor_norte + DATA[a].valor_nordeste) / DATA[a].valor_total * 100)],
+    ['Beneficiários N/NE', a => fmtInt(DATA[a].benef_nne)],
+    ['% dos Beneficiários Totais', a => fmtPct(DATA[a].benef_nne / DATA[a].benef_total * 100)],
+    ['Gap Valor vs. Benef. (pp)', a => {
+      const gV = (DATA[a].valor_norte + DATA[a].valor_nordeste) / DATA[a].valor_total * 100;
+      const gB = DATA[a].benef_nne / DATA[a].benef_total * 100;
+      const g = (gV - gB).toFixed(1);
+      const cor = parseFloat(g) > 0 ? 'color:var(--vermelho)' : 'color:var(--verde-sbs)';
+      return `<span style="${cor}">${parseFloat(g)>0?'+':''}${g} pp</span>`;
+    }],
+    ['Valor médio/AF no N/NE (R$)', a => fmtMoney((DATA[a].valor_norte + DATA[a].valor_nordeste) / DATA[a].benef_nne)],
+    ['Valor médio/AF demais regiões (R$)', a => fmtMoney((DATA[a].valor_total - DATA[a].valor_norte - DATA[a].valor_nordeste) / (DATA[a].benef_total - DATA[a].benef_nne))],
+  ];
+  let tnne = `<table><tr><th>Indicador</th>${anos.map(a=>`<th>${a}</th>`).join('')}</tr>`;
+  nneRows.forEach(([label, fn]) => {
+    tnne += `<tr><td>${label}</td>${anos.map(a=>`<td>${fn(a)}</td>`).join('')}</tr>`;
+  });
+  tnne += '</table>';
+  document.getElementById('tabela-nne').innerHTML = tnne;
+}
+
+// ===================== ABA 3 — DIVERSIFICAÇÃO =====================
+function renderDiversificacao() {
+  const anos = anosOrdenados();
+  const aF = anoMax(), a0 = anoMin();
+  const multi = anos.length > 1;
+
+  // KPIs
+  document.getElementById('kpis-div').innerHTML = [
+    kpiCard(DATA[aF].tipos_mp, 'Tipos de matéria-prima', multi ? calcDelta(DATA[a0].tipos_mp, DATA[aF].tipos_mp) : '', `Ref. ${aF}`),
+    kpiCard(fmtMoney(DATA[aF].valor_nao_soja), 'Valor não-soja', multi ? calcDelta(DATA[a0].valor_nao_soja, DATA[aF].valor_nao_soja) : '', `Ref. ${aF}`),
+    kpiCard(fmtPct(DATA[aF].valor_nao_soja / DATA[aF].valor_total * 100), '% não-soja', multi ? calcDelta(DATA[a0].valor_nao_soja/DATA[a0].valor_total, DATA[aF].valor_nao_soja/DATA[aF].valor_total) : '', `Ref. ${aF}`),
+    kpiCard(fmtMoney(DATA[aF].valor_soja), 'Valor soja', multi ? calcDelta(DATA[a0].valor_soja, DATA[aF].valor_soja) : '', `Ref. ${aF}`),
+  ].join('');
+
+  // Soja vs não-soja
+  destroyChart('div-soja');
+  const ctx1 = document.getElementById('chart-div-soja').getContext('2d');
+  if (anos.length === 1) {
+    const a = anos[0];
+    charts['div-soja'] = new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: ['Soja', 'Não-Soja'],
+        datasets: [{ data: [DATA[a].valor_soja/1e9, DATA[a].valor_nao_soja/1e9], backgroundColor: ['#004580','#168821'], hoverOffset: 8 }]
+      },
+      options: { cutout: '58%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => fmtMoney(c.parsed * 1e9) } } } }
+    });
+  } else {
+    charts['div-soja'] = new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: anos,
+        datasets: [
+          { label: 'Soja', data: anos.map(a => DATA[a].valor_soja/1e9), backgroundColor: '#004580', borderRadius: 4 },
+          { label: 'Não-Soja', data: anos.map(a => DATA[a].valor_nao_soja/1e9), backgroundColor: '#168821', borderRadius: 4 }
+        ]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: yAxisBi } } } }
+    });
+  }
+
+  // Top 10 2025
+  const top10 = Object.entries(DATA[2025].mp).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  destroyChart('div-top10');
+  const ctx2 = document.getElementById('chart-div-top10').getContext('2d');
+  charts['div-top10'] = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: top10.map(x=>x[0]),
+      datasets: [{ label: 'Valor 2025', data: top10.map(x=>x[1]/1e6), backgroundColor: top10.map((_,i)=>i===0?'#004580':'#1351b4'), borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { x: { ticks: { callback: v => 'R$ '+v.toFixed(0)+' mi' } } }
+    }
+  });
+
+  // Tabela MPs
+  const todos = new Set([...Object.keys(DATA[2023].mp), ...Object.keys(DATA[2024].mp), ...Object.keys(DATA[2025].mp)]);
+  const mpOrdenados = [...todos].sort((a,b) => (DATA[2025].mp[b]||0) - (DATA[2025].mp[a]||0));
+  const anosVis = [2023,2024,2025].filter(a => anos.includes(a));
+  let thead = `<tr><th>Matéria-Prima</th>${anosVis.map(a=>`<th>${a}</th>`).join('')}</tr>`;
+  let tbody = mpOrdenados.map(p => {
+    const badge = MP_NOVOS[2024]?.includes(p) ? `<span class="badge-novo24">novo 2024</span>` :
+                  MP_NOVOS[2025]?.includes(p) ? `<span class="badge-novo25">novo 2025</span>` : '';
+    const cols = anosVis.map(a => `<td>${DATA[a].mp[p] ? fmtMoney(DATA[a].mp[p]) : '—'}</td>`).join('');
+    return `<tr><td>${p}${badge}</td>${cols}</tr>`;
+  }).join('');
+  document.getElementById('tabela-mp').innerHTML = `<table>${thead}${tbody}</table>`;
+}
+
+// ===================== ABA 4 — ARRANJOS =====================
+function renderArranjos() {
+  const anos = anosOrdenados();
+  const aF = anoMax(), a0 = anoMin();
+  const multi = anos.length > 1;
+
+  document.getElementById('kpis-arr').innerHTML = [
+    kpiCard(fmtInt(DATA[aF].benef_total), 'Total de beneficiários', multi ? calcDelta(DATA[a0].benef_total, DATA[aF].benef_total) : '', `Ref. ${aF}`),
+    kpiCard(fmtInt(DATA[aF].benef_nne), 'Beneficiários N/NE', multi ? calcDelta(DATA[a0].benef_nne, DATA[aF].benef_nne) : '', `Ref. ${aF}`),
+    kpiCard(fmtMoney(DATA[aF].valor_medio_af), 'Valor médio por AF', multi ? calcDelta(DATA[a0].valor_medio_af, DATA[aF].valor_medio_af) : '', `Ref. ${aF}`),
+    kpiCard(DATA[aF].caf_total, 'Cooperativas com CAF', multi ? calcDelta(DATA[a0].caf_total, DATA[aF].caf_total) : '', `Ref. ${aF}`),
+    kpiCard(DATA[aF].agentes_total, 'Agentes Promotores', multi ? calcDelta(DATA[a0].agentes_total, DATA[aF].agentes_total) : '', `Ref. ${aF}`),
+  ].join('');
+
+  // Beneficiários agrupado
+  destroyChart('arr-benef');
+  const ctx1 = document.getElementById('chart-arr-benef').getContext('2d');
+  charts['arr-benef'] = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: REGIOES,
+      datasets: anos.map(a => ({
+        label: String(a), data: REGIOES.map(r => DATA[a][CHAVE_BENEF[r]]),
+        backgroundColor: CORES[a], borderRadius: 3
+      }))
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: v => v.toLocaleString('pt-BR') } } } }
+  });
+
+  // Rosca arranjos (ano mais recente selecionado)
+  destroyChart('arr-rosca');
+  const ctx2 = document.getElementById('chart-arr-rosca').getContext('2d');
+  const ar = DATA[aF];
+  charts['arr-rosca'] = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['Coops c/ CAF','Coops s/ CAF','Agentes Promotores','Individuais'],
+      datasets: [{ data: [ar.valor_coop_caf, ar.valor_coop_scaf, ar.valor_agentes, ar.valor_individuais].map(v=>v/1e9), backgroundColor: CORES_ARR, hoverOffset: 8 }]
+    },
+    options: {
+      cutout: '55%',
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { callbacks: { label: c => `${c.label}: ${fmtMoney(c.parsed * 1e9)} (${(c.parsed/(ar.valor_total/1e9)*100).toFixed(1)}%)` } },
+        title: { display: true, text: `Ano de referência: ${aF}`, font: { size: 11 }, color: '#555e6d' }
+      }
+    }
+  });
+
+  // Tabela arranjos
+  const arranjos = [
+    ['Coops c/ CAF','valor_coop_caf'],
+    ['Coops s/ CAF','valor_coop_scaf'],
+    ['Agentes Promotores','valor_agentes'],
+    ['Individuais','valor_individuais'],
+  ];
+  let tarr = `<table><tr><th>Arranjo</th>${anos.map(a=>`<th>${a} — Valor</th><th>${a} — % Total</th>`).join('')}</tr>`;
+  arranjos.forEach(([nome, chave]) => {
+    tarr += `<tr><td>${nome}</td>${anos.map(a=>`<td>${fmtMoney(DATA[a][chave])}</td><td>${(DATA[a][chave]/DATA[a].valor_total*100).toFixed(1)}%</td>`).join('')}</tr>`;
+  });
+  tarr += `<tr class="total-row"><td>Total</td>${anos.map(a=>`<td>${fmtMoney(DATA[a].valor_total)}</td><td>100%</td>`).join('')}</tr></table>`;
+  document.getElementById('tabela-arranjos').innerHTML = tarr;
+
+  // Tabela CAF por região
+  let tcaf = `<table><tr><th>Região</th>${anos.map(a=>`<th>${a}</th>`).join('')}</tr>`;
+  REGIOES.forEach(r => {
+    tcaf += `<tr><td>${r}</td>${anos.map(a=>`<td>${DATA[a][CHAVE_CAF[r]]}</td>`).join('')}</tr>`;
+  });
+  tcaf += `<tr class="total-row"><td>Total</td>${anos.map(a=>`<td>${DATA[a].caf_total}</td>`).join('')}</tr></table>`;
+  document.getElementById('tabela-caf').innerHTML = tcaf;
+}
+
+// ===================== ABA 5 — ATER =====================
+function renderAter() {
+  const anos = anosOrdenados();
+  const aF = anoMax(), a0 = anoMin();
+  const multi = anos.length > 1;
+
+  const custoPorAF = a => DATA[a].valor_ater / DATA[a].benef_total;
+  const relacaoAcqAter = a => DATA[a].valor_total / DATA[a].valor_ater;
+
+  document.getElementById('kpis-ater').innerHTML = [
+    kpiCard(fmtMoney(DATA[aF].valor_ater), 'Valor ATER', multi ? calcDelta(DATA[a0].valor_ater, DATA[aF].valor_ater) : '', `Ref. ${aF}`),
+    kpiCard(fmtMoney(DATA[aF].total_ater), 'Total ATER+Fomento+Doações', multi ? calcDelta(DATA[a0].total_ater, DATA[aF].total_ater) : '', `Ref. ${aF}`),
+    kpiCard('R$ ' + Math.round(custoPorAF(aF)).toLocaleString('pt-BR'), 'Custo ATER por AF', multi ? calcDelta(custoPorAF(a0), custoPorAF(aF)) : '', `Ref. ${aF}`),
+    kpiCard('R$ ' + relacaoAcqAter(aF).toFixed(1), 'R$ Aquisições / R$ ATER', multi ? calcDelta(relacaoAcqAter(a0), relacaoAcqAter(aF)) : '', `Ref. ${aF}`),
+  ].join('');
+
+  // Barras ATER
+  destroyChart('ater-barras');
+  const ctx1 = document.getElementById('chart-ater-barras').getContext('2d');
+  charts['ater-barras'] = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: anos,
+      datasets: [
+        { label: 'ATER', data: anos.map(a => DATA[a].valor_ater/1e6), backgroundColor: '#004580', borderRadius: 4 },
+        { label: 'Fomento', data: anos.map(a => DATA[a].valor_fomento/1e6), backgroundColor: '#1351b4', borderRadius: 4 },
+        { label: 'Doações', data: anos.map(a => DATA[a].valor_doacao/1e6), backgroundColor: '#168821', borderRadius: 4 },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: v => 'R$ '+v.toFixed(1)+' mi' } } } }
+  });
+
+  // Custo por AF
+  destroyChart('ater-custo');
+  const ctx2 = document.getElementById('chart-ater-custo').getContext('2d');
+  charts['ater-custo'] = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: anos,
+      datasets: [{ label: 'Custo ATER por AF (R$)', data: anos.map(a => Math.round(custoPorAF(a))), backgroundColor: anos.map(a => CORES[a]), borderRadius: 4 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => 'R$ '+v.toLocaleString('pt-BR') } } } }
+  });
+
+  // Tabela completa
+  const rows = [
+    ['ATER (R$)', a => fmtMoney(DATA[a].valor_ater)],
+    ['Fomento (R$)', a => fmtMoney(DATA[a].valor_fomento)],
+    ['Doações (R$)', a => fmtMoney(DATA[a].valor_doacao)],
+    ['Total ATER+Fomento+Doações (R$)', a => fmtMoney(DATA[a].total_ater)],
+    ['Beneficiários (nº)', a => fmtInt(DATA[a].benef_total)],
+    ['Custo ATER por AF (R$)', a => 'R$ '+Math.round(custoPorAF(a)).toLocaleString('pt-BR')],
+    ['R$ Aquisições / R$ ATER', a => 'R$ '+relacaoAcqAter(a).toFixed(1)],
+  ];
+  let tater = `<table><tr><th>Indicador</th>${anos.map(a=>`<th>${a}</th>`).join('')}</tr>`;
+  rows.forEach(([label, fn], i) => {
+    const cls = i === 3 ? ' class="total-row"' : '';
+    tater += `<tr${cls}><td>${label}</td>${anos.map(a=>`<td>${fn(a)}</td>`).join('')}</tr>`;
+  });
+  tater += '</table>';
+  document.getElementById('tabela-ater').innerHTML = tater;
+}
+
+// ===================== ABA 6 — PMEN =====================
+function renderPMEN() {
+  const anos = anosOrdenados();
+  const aF = anoMax();
+
+  // KPIs
+  let khtml = anos.map(a => {
+    const diff = (DATA[a].pmen - 22).toFixed(2).replace('.',',');
+    const cor = DATA[a].pmen < 22 ? 'var(--vermelho)' : 'var(--verde-sbs)';
+    return `<div class="kpi-card">
+      <div class="kpi-valor" style="color:${cor}">${DATA[a].pmen.toFixed(2).replace('.',',')}%</div>
+      <div class="kpi-label">PMEN ${a}</div>
+      <div style="font-size:0.73rem;color:var(--vermelho);margin-top:3px;">${diff} pp vs. meta</div>
+    </div>`;
+  }).join('');
+  khtml += `<div class="kpi-card">
+    <div class="kpi-valor" style="color:var(--azul-vivo)">22,00%</div>
+    <div class="kpi-label">Meta PMEN<br><span style="font-size:0.7rem;font-style:italic">Portaria MDA nº 28/2024, art. 31, §4º</span></div>
+  </div>`;
+  document.getElementById('kpis-pmen').innerHTML = khtml;
+
+  // Linha PMEN
+  destroyChart('pmen-linha');
+  const ctx1 = document.getElementById('chart-pmen-linha').getContext('2d');
+  charts['pmen-linha'] = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: anos,
+      datasets: [
+        {
+          label: 'PMEN (%)',
+          data: anos.map(a => DATA[a].pmen),
+          borderColor: '#c0392b', backgroundColor: 'rgba(192,57,43,0.08)',
+          pointBackgroundColor: '#c0392b', pointRadius: 7, tension: 0.3, fill: true, borderWidth: 2.5
+        },
+        {
+          label: 'Meta (22%)', data: anos.map(() => 22),
+          borderColor: '#1351b4', borderDash: [7,4], pointRadius: 0, borderWidth: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { min: 0, max: 28, ticks: { callback: v => v+'%' } } }
+    }
+  });
+
+  // Barras numerador vs denominador
+  destroyChart('pmen-barras');
+  const ctx2 = document.getElementById('chart-pmen-barras').getContext('2d');
+  charts['pmen-barras'] = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: anos,
+      datasets: [
+        { label: 'Valor AF — Numerador (R$ bi)', data: anos.map(a => DATA[a].pmen_numerador/1e9), backgroundColor: '#168821', borderRadius: 4 },
+        { label: 'Mercado Total — Denominador (R$ bi)', data: anos.map(a => DATA[a].pmen_denominador/1e9), backgroundColor: '#004580', borderRadius: 4 },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { ticks: { callback: v => 'R$ '+v.toFixed(0)+' bi' } } }
+    }
+  });
+
+  // Tabela PMEN
+  const fontes = { 2023: 'SABIDO/UPBs†', 2024: 'SABIDO/UPBs†', 2025: 'SABIDO/UPBs†' };
+  let tpmen = `<table>
+    <tr><th>Ano</th><th>Numerador</th><th>Denominador</th><th>PMEN</th><th>Meta</th><th>Diferença</th><th>Fonte Denominador</th></tr>`;
+  [2023,2024,2025].forEach(a => {
+    if (!anos.includes(a)) return;
+    const diff = (DATA[a].pmen - 22).toFixed(2).replace('.',',');
+    tpmen += `<tr>
+      <td>${a}</td>
+      <td>${fmtMoney(DATA[a].pmen_numerador)}</td>
+      <td>${fmtMoney(DATA[a].pmen_denominador)}</td>
+      <td class="pmen-abaixo">${DATA[a].pmen.toFixed(2).replace('.',',')}%</td>
+      <td>22,00%</td>
+      <td class="pmen-abaixo">${diff} pp</td>
+      <td style="font-size:0.78rem;color:var(--texto-secundario)">${fontes[a]}</td>
+    </tr>`;
+  });
+  tpmen += '</table>';
+  tpmen += `<p style="font-size:0.73rem;color:var(--texto-secundario);margin-top:6px;font-style:italic">
+      † Os denominadores dos três anos utilizam o valor bruto total de biodiesel comercializado pelas UPBs detentoras do Selo, declarado diretamente ao Sistema SABIDO/MDA. O método ANP alternativo (Volume ANP × Preço médio ponderado regional/mensal), utilizado na NT nº 2/2025/DMAITE-MDA para o ano de 2024, produz denominadores sistematicamente menores (entre 10% e 18%) e PMEN aproximadamente 2 pp mais elevado. A série pelo método SABIDO é apresentada neste painel por ser metodologicamente homogênea para os três anos.
+    </p>`;
+  document.getElementById('tabela-pmen').innerHTML = tpmen;
+}
+
+// ===================== INIT =====================
+const label = document.getElementById('modo-label');
+label.textContent = 'Comparando: 2023 × 2024 × 2025';
+renderAll();
+</script>
+</body>
+</html>
