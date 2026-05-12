@@ -317,7 +317,6 @@
     <div class="section-title">Tabela Completa — ATER, Fomento e Doações</div>
     <div class="overflow-x" id="tabela-ater"></div>
   </div>
-  <div class="insight-box">💡 O custo de ATER por agricultor quase triplicou entre 2023 e 2025 (R$ 1.213 → R$ 3.183). A relação entre valor investido em ATER e valor de aquisições caiu de R$ 88,4 para R$ 51,1 por real investido — queda de 42%.</div>
 </div>
 
 <!-- ===== ABA 6 — PMEN ===== -->
@@ -337,10 +336,10 @@
     <div class="section-title">Tabela do PMEN</div>
     <div class="overflow-x" id="tabela-pmen"></div>
     <div class="nota-metodologica">
-      <strong>Nota metodológica:</strong> PMEN = (Aquisições AF + ATER + Fomento + Doações) ÷ Valor total bruto de biodiesel comercializado pelas UPBs com Selo. Numerador: SABIDO/MDA e informações formais das UPBs. Denominador 2023 e 2024: Volume ANP × Preço médio ponderado regional e mensal (série semanal ANP, "Preços Médios Ponderados Semanais a partir de 2013"); resultado aproximado, não exato, conforme metodologia da NT nº 2/2025/DMAITE-MDA. Denominador 2025: Valor bruto total informado diretamente pelas UPBs ao SABIDO (R$ 62,37 bi). <em>* O denominador de 2025 provém de declaração direta das empresas ao SABIDO, fonte não disponível no momento da elaboração da NT nº 2/2025. Por ser mais preciso que a estimativa via ANP, adotou-se metodologia distinta para esse ano.</em> Meta: 22% (Portaria MDA nº 28/2024, art. 31, §4º). Fontes: SABIDO/MDA, ANP, NT nº 2/2025/DMAITE-MDA, UPBs.
+      <strong>Nota metodológica:</strong> PMEN = (Aquisições AF + ATER + Fomento + Doações) ÷ Valor total bruto de biodiesel comercializado pelas UPBs com Selo. Nota metodológica: Os valores aqui utilizados foram atualizados com as informações de dispêndios com a agricultura familiar e comercialização de biodiesel baseados nas informações fornecidas pelas próprias UPBs na plataforma SABIDO. A diferença entre esses dados e aqueles apresentados NT nº 2/2025/DMAITE-MDA se justificam pela atual disponibilidade mais precisa de dados (antes calculados por médias obtidas da ANP, quanto ao valor de comercialização) e a necessidade de padronização de método para a a comparabilidade entre os três anos consecutivos. Fonte: SABIDO/MDA - informado pelas UPBs.
     </div>
   </div>
-  <div class="insight-box">💡 O valor pago à agricultura familiar cresceu apenas 1,8% nominais entre 2023 e 2025. No mesmo período, o PMEN caiu de 21,23% para 11,15% — uma deterioração de 10,1 pp em três anos. O principal vetor dessa queda não foi a redução do numerador, mas o crescimento acelerado do mercado de biodiesel, impulsionado pelo aumento da mistura obrigatória (12%→14%→15%) e pela alta de preços ao produtor. Para atingir o PMEN de 22% em 2025, o valor pago à AF deveria ter sido de R$ 13,72 bi — R$ 6,77 bi acima do valor efetivo.</div>
+  <div class="insight-box">💡 O valor pago à agricultura familiar cresceu apenas 1,8% nominais entre 2023 e 2025. No mesmo período, o PMEN caiu de 19,25% para 11,15% — uma deterioração de 8,1 pp em três anos. O principal vetor dessa queda não foi a redução do numerador, mas o crescimento acelerado do mercado de biodiesel, impulsionado pelo aumento da mistura obrigatória (12%→14%→15%) e pela alta de preços ao produtor. Para atingir o PMEN de 22% em 2025, o valor pago à AF deveria ter sido de R$ 13,72 bi — R$ 6,77 bi acima do valor efetivo.</div>
 </div>
 
 </main>
@@ -626,7 +625,7 @@ function renderVisaoGeral() {
   const pmenA0 = DATA[a0].pmen.toFixed(2).replace('.',',');
   const pmenAF = DATA[aF].pmen.toFixed(2).replace('.',',');
   document.getElementById('insight-vg').innerHTML = multi
-    ? `💡 Entre ${a0} e ${aF}, o valor nominal pago à agricultura familiar variou ${crescAcq}%, enquanto o PMEN caiu de ${pmenA0}% para ${pmenAF}%. A deterioração do indicador não decorreu de redução do numerador, mas do crescimento acelerado do mercado de biodiesel — impulsionado pelo aumento da mistura obrigatória e pela alta de preços ao produtor.`
+    ? `💡 Entre ${a0} e ${aF}, o valor nominal pago à agricultura familiar variou ${crescAcq}%, enquanto o PMEN caiu de ${pmenA0}% para ${pmenAF}%. A deterioração do indicador decorre do fato de que as empresas de biodiesel aumentaram expressivamente o seu faturamento  em função do aumento da mistura obrigatória e da elevação dos preços do biodiesel e, apesar disso, não aumentaram o volume de dispêndios para a agricultura familiar..`
     : `💡 Em ${aF}, o valor total de aquisições foi de ${fmtMoney(DATA[aF].valor_total)}, com ${fmtInt(DATA[aF].benef_total)} agricultores beneficiados e PMEN de ${pmenAF}% (meta: 22%).`;
 }
 
