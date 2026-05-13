@@ -309,7 +309,7 @@
       <canvas id="chart-ater-barras" height="260"></canvas>
     </div>
     <div class="chart-container">
-      <div class="section-title">Custo ATER por Agricultor Familiar (R$)</div>
+      <div class="section-title">Dispêndio de ATER por Agricultor Familiar (R$)</div>
       <canvas id="chart-ater-custo" height="260"></canvas>
     </div>
   </div>
@@ -915,7 +915,7 @@ function renderAter() {
   document.getElementById('kpis-ater').innerHTML = [
     kpiCard(fmtMoney(DATA[aF].valor_ater), 'Valor ATER', multi ? calcDelta(DATA[a0].valor_ater, DATA[aF].valor_ater) : '', `Ref. ${aF}`),
     kpiCard(fmtMoney(DATA[aF].total_ater), 'Total ATER+Fomento+Doações', multi ? calcDelta(DATA[a0].total_ater, DATA[aF].total_ater) : '', `Ref. ${aF}`),
-    kpiCard('R$ ' + Math.round(custoPorAF(aF)).toLocaleString('pt-BR'), 'Custo ATER por AF', multi ? calcDelta(custoPorAF(a0), custoPorAF(aF)) : '', `Ref. ${aF}`),
+    kpiCard('R$ ' + Math.round(custoPorAF(aF)).toLocaleString('pt-BR'), 'Dispêndio ATER por AF', multi ? calcDelta(custoPorAF(a0), custoPorAF(aF)) : '', `Ref. ${aF}`),
     kpiCard('R$ ' + relacaoAcqAter(aF).toFixed(1), 'R$ Aquisições / R$ ATER', multi ? calcDelta(relacaoAcqAter(a0), relacaoAcqAter(aF)) : '', `Ref. ${aF}`),
   ].join('');
 
@@ -942,7 +942,7 @@ function renderAter() {
     type: 'bar',
     data: {
       labels: anos,
-      datasets: [{ label: 'Custo ATER por AF (R$)', data: anos.map(a => Math.round(custoPorAF(a))), backgroundColor: anos.map(a => CORES[a]), borderRadius: 4 }]
+      datasets: [{ label: 'Dispêndio em ATER por AF (R$)', data: anos.map(a => Math.round(custoPorAF(a))), backgroundColor: anos.map(a => CORES[a]), borderRadius: 4 }]
     },
     options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => 'R$ '+v.toLocaleString('pt-BR') } } } }
   });
@@ -954,7 +954,7 @@ function renderAter() {
     ['Doações (R$)', a => fmtMoney(DATA[a].valor_doacao)],
     ['Total ATER+Fomento+Doações (R$)', a => fmtMoney(DATA[a].total_ater)],
     ['Beneficiários (nº)', a => fmtInt(DATA[a].benef_total)],
-    ['Custo ATER por AF (R$)', a => 'R$ '+Math.round(custoPorAF(a)).toLocaleString('pt-BR')],
+    ['Dispêndio ATER por AF (R$)', a => 'R$ '+Math.round(custoPorAF(a)).toLocaleString('pt-BR')],
     ['R$ Aquisições / R$ ATER', a => 'R$ '+relacaoAcqAter(a).toFixed(1)],
   ];
   let tater = `<table><tr><th>Indicador</th>${anos.map(a=>`<th>${a}</th>`).join('')}</tr>`;
